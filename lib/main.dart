@@ -10,82 +10,194 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: CurvedSquare(),
-        ),
-      ),
+      debugShowCheckedModeBanner: false,
+      home: CombinedScreen(),
     );
   }
 }
 
-class CurvedSquare extends StatelessWidget {
-  const CurvedSquare({super.key});
+class CombinedScreen extends StatefulWidget {
+  const CombinedScreen({super.key});
+
+  @override
+  State<CombinedScreen> createState() => _CombinedScreenState();
+}
+
+class _CombinedScreenState extends State<CombinedScreen> {
+  final TextEditingController expressionController = TextEditingController();
+  final TextEditingController numberController = TextEditingController();
+
+  String calculatorResult = '';
+  String oddEvenResult = '';
+
+  // Function to clear calculator input & result
+  void clearExpression() {
+    expressionController.clear();
+    setState(() {
+      calculatorResult = '';
+    });
+  }
+
+  // Function to perform calculation
+  void calculateExpression() {
+    String input = expressionController.text;
+    double res = 0;
+
+    try {
+      if (input.contains('+')) {
+        var parts = input.split('+');
+        res = double.parse(parts[0]) + double.parse(parts[1]);
+      } else if (input.contains('-')) {
+        var parts = input.split('-');
+        res = double.parse(parts[0]) - double.parse(parts[1]);
+      } else if (input.contains('*')) {
+        var parts = input.split('*');
+        res = double.parse(parts[0]) * double.parse(parts[1]);
+      } else if (input.contains('/')) {
+        var parts = input.split('/');
+        double num2 = double.parse(parts[1]);
+        if (num2 != 0) {
+          res = double.parse(parts[0]) / num2;
+        } else {
+          setState(() {
+            calculatorResult = 'Cannot divide by zero';
+          });
+          return;
+        }
+      } else {
+        setState(() {
+          calculatorResult = 'Invalid expression';
+        });
+        return;
+      }
+
+      setState(() {
+        calculatorResult = 'Result: $res';
+      });
+    } catch (e) {
+      setState(() {
+        calculatorResult = 'Invalid input';
+      });
+    }
+  }
+
+  // Function to check odd or even
+  void checkOddOrEven() {
+    if (numberController.text.isEmpty) {
+      setState(() {
+        oddEvenResult = 'Please enter a number';
+      });
+      return;
+    }
+
+    int numValue = int.tryParse(numberController.text) ?? 0;
+
+    setState(() {
+      if (numValue % 2 == 0) {
+        oddEvenResult = '$numValue is Even';
+      } else {
+        oddEvenResult = '$numValue is Odd';
+      }
+    });
+  }
+
+  // Clear Odd/Even input & result
+  void clearOddEven() {
+    numberController.clear();
+    setState(() {
+      oddEvenResult = '';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 150,
-      height: 150,
-      decoration: BoxDecoration(
-        color: Colors.red,
-        border: Border.all(color: Colors.black, width: 3),
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 6,
-            offset: Offset(3, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center, // align vertically center
-        children: [
-          Padding(
-            padding: EdgeInsets.all(8),
-            child: Image(
-              image: AssetImage('assets/images/5332447875512265802.jpg'),
-              width: 50,
-              height: 50,
-            ),
-          ),
-          SizedBox(width: 10),
-          // Texts stacked vertically
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center, // center texts vertically
-            crossAxisAlignment: CrossAxisAlignment.start, // align texts to start (left)
+    return Scaffold(
+      backgroundColor: Colors.white,
+      
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 80, left: 30, right: 30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                'Nabeel',
+              // Personal Info
+              const Text(
+                'Name: Muhammed Nabeel Nasar\n'
+                'Age: 22\n'
+                'Education: MCA in AI/ML\n'
+                'Location: Kerala, India\n'
+                'Email: nabeel@gmail.com\n'
+                'Hobby: watching Movies',
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontFamily: 'Arial',
-                  fontSize: 18,
+                  fontSize: 17,
                   color: Colors.black,
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 30),
+
+              // Calculator Section
               Text(
-                'Kannur',
-                style: TextStyle(
-                  fontFamily: 'Courier New',
-                  fontSize: 18,
-                  color: Colors.black,
+                'Calculator',
+                style: TextStyle(fontSize: 20),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: expressionController,
+                keyboardType: TextInputType.name,
+                decoration: const InputDecoration(
+                  labelText: 'Enter expression (e.g. 5+3)',
+                  border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: calculateExpression,
+                child: const Text('Calculate'),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: clearExpression,
+                child: const Text('Clear'),
+              ),
+              const SizedBox(height: 10),
               Text(
-                'Kerala',
-                style: TextStyle(
-                  fontFamily: 'Cursive',
-                  fontSize: 18,
-                  color: Colors.black,
+                calculatorResult,
+                style: const TextStyle(fontSize: 20, color: Colors.black),
+              ),
+             
+
+              Text(
+                'Odd or Even Checker',
+                style: TextStyle(fontSize: 20),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: numberController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Enter a number',
+                  border: OutlineInputBorder(),
                 ),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: checkOddOrEven,
+                child: const Text('Check'),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: clearOddEven,
+                child: const Text('Clear'),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                oddEvenResult,
+                style: const TextStyle(fontSize: 20, color: Colors.black),
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
