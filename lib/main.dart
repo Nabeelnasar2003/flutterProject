@@ -9,196 +9,125 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return  MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: CombinedScreen(),
+      home: FirstScreen(),
+      
     );
   }
-}
-
-class CombinedScreen extends StatefulWidget {
-  const CombinedScreen({super.key});
-
-  @override
-  State<CombinedScreen> createState() => _CombinedScreenState();
-}
-
-class _CombinedScreenState extends State<CombinedScreen> {
-  final TextEditingController expressionController = TextEditingController();
-  final TextEditingController numberController = TextEditingController();
-
-  String calculatorResult = '';
-  String oddEvenResult = '';
-
-  // Function to clear calculator input & result
-  void clearExpression() {
-    expressionController.clear();
-    setState(() {
-      calculatorResult = '';
-    });
   }
 
-  // Function to perform calculation
-  void calculateExpression() {
-    String input = expressionController.text;
-    double res = 0;
 
-    try {
-      if (input.contains('+')) {
-        var parts = input.split('+');
-        res = double.parse(parts[0]) + double.parse(parts[1]);
-      } else if (input.contains('-')) {
-        var parts = input.split('-');
-        res = double.parse(parts[0]) - double.parse(parts[1]);
-      } else if (input.contains('*')) {
-        var parts = input.split('*');
-        res = double.parse(parts[0]) * double.parse(parts[1]);
-      } else if (input.contains('/')) {
-        var parts = input.split('/');
-        double num2 = double.parse(parts[1]);
-        if (num2 != 0) {
-          res = double.parse(parts[0]) / num2;
-        } else {
-          setState(() {
-            calculatorResult = 'Cannot divide by zero';
-          });
-          return;
-        }
-      } else {
-        setState(() {
-          calculatorResult = 'Invalid expression';
-        });
-        return;
-      }
+final TextEditingController myController = TextEditingController();
+final TextEditingController nextController = TextEditingController();
 
-      setState(() {
-        calculatorResult = 'Result: $res';
-      });
-    } catch (e) {
-      setState(() {
-        calculatorResult = 'Invalid input';
-      });
-    }
-  }
 
-  // Function to check odd or even
-  void checkOddOrEven() {
-    if (numberController.text.isEmpty) {
-      setState(() {
-        oddEvenResult = 'Please enter a number';
-      });
-      return;
-    }
 
-    int numValue = int.tryParse(numberController.text) ?? 0;
-
-    setState(() {
-      if (numValue % 2 == 0) {
-        oddEvenResult = '$numValue is Even';
-      } else {
-        oddEvenResult = '$numValue is Odd';
-      }
-    });
-  }
-
-  // Clear Odd/Even input & result
-  void clearOddEven() {
-    numberController.clear();
-    setState(() {
-      oddEvenResult = '';
-    });
-  }
+class SecondScreen extends StatelessWidget {
+  final String name;
+  final int age;
+  const SecondScreen({Key? key, required this.name , required this.age}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 80, left: 30, right: 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Personal Info
-              const Text(
-                'Name: Muhammed Nabeel Nasar\n'
-                'Age: 22\n'
-                'Education: MCA in AI/ML\n'
-                'Location: Kerala, India\n'
-                'Email: nabeel@gmail.com\n'
-                'Hobby: watching Movies',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 17,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 30),
-
-              // Calculator Section
-              Text(
-                'Calculator',
-                style: TextStyle(fontSize: 20),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: expressionController,
-                keyboardType: TextInputType.name,
-                decoration: const InputDecoration(
-                  labelText: 'Enter expression (e.g. 5+3)',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: calculateExpression,
-                child: const Text('Calculate'),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: clearExpression,
-                child: const Text('Clear'),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                calculatorResult,
-                style: const TextStyle(fontSize: 20, color: Colors.black),
-              ),
-             
-
-              Text(
-                'Odd or Even Checker',
-                style: TextStyle(fontSize: 20),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: numberController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Enter a number',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: checkOddOrEven,
-                child: const Text('Check'),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: clearOddEven,
-                child: const Text('Clear'),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                oddEvenResult,
-                style: const TextStyle(fontSize: 20, color: Colors.black),
-              ),
-            ],
-          ),
+      body: Center(
+        child:Column(
+mainAxisAlignment: MainAxisAlignment.center,
+children: [
+  Text(
+        '$name',
+  style: TextStyle(fontSize: 24, color: Colors.black)
+  ),
+  SizedBox(height: 20),
+  Text(
+        '$age',
+  style: TextStyle(fontSize: 24, color: Colors.black)
+  ),
+  SizedBox(height: 20),
+       ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Back'),
         ),
+       ],
+      ),
       ),
     );
+  }
+} 
+
+class FirstScreen extends StatelessWidget {
+  const FirstScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Padding(
+            padding: const EdgeInsets.only(top: 50, left: 20, right: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: myController,
+              decoration: InputDecoration(
+                labelText: 'Enter name',
+                border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8.0))),
+              ),
+            ),
+            SizedBox(height:20),
+            TextField(
+              controller: nextController,
+              decoration: InputDecoration(
+                labelText: 'Enter Age',
+                border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+              ),
+            ),
+            SizedBox(height: 15),
+        ElevatedButton(
+            onPressed: () {
+              if(myController.text.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Please enter name")),
+                );
+              }
+              else if(nextController.text.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Please enter age")),
+                );
+              }
+              else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SecondScreen(
+                      name: myController.text,
+                      age: int.parse(nextController.text),
+                    ),
+                  ),
+                );
+              }
+            },
+          
+            child: const Text('Display'),
+          ),
+          SizedBox(height: 15),
+          ElevatedButton(
+            onPressed: () {
+              myController.clear();
+              nextController.clear();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Fields cleared")),
+              );
+            },
+            child: Text('Clear'),
+          ),
+        ],
+      ),
+    ),
+      )
+  );
   }
 }
