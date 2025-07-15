@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
           children: [
              CircleAvatar(
               radius: 100,
-              backgroundImage: AssetImage('assets/images/5332447875512265802.j'),
+              backgroundImage: AssetImage('assets/images/5332447875512265802.jpg'),
             ),
             SizedBox(height: 20),
             Text(
