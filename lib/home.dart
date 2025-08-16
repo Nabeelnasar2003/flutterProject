@@ -1,4 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:sample/newpage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+// Save token
+Future<void> saveToken(String token) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('token', token);
+}
+
+// API login function
+Future<bool> loginUser(String username, String password) async {
+  final url = Uri.parse("https://nexus.ebsgl.com/api/auth/agent-login");
+
+  final response = await http.post(
+    url,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: {
+      'identifier': username,
+      'password': password,
+    },
+  );
+
+  print("Status Code: ${response.statusCode}");
+  print("Response Body: ${response.body}");
+
+  if (response.statusCode == 200) {
+    // ✅ Save token (using response body for now)
+    await saveToken(response.body.toString());
+    print("✅ Login successful, token saved");
+    return true;
+  } else {
+    print("❌ Login failed");
+    return false;
+  }
+}
+
+// Controllers for text fields
+final TextEditingController usernameController = TextEditingController();
+final TextEditingController passwordController = TextEditingController();
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -8,165 +50,70 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String name = 'Muhammed Nabeel';
-  int age = 21;
-  String bio = 'Aspiring Flutter developer from Kerala.';
-
-  void openForm() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ProfileFormPage(
-
-          currentName: name,
-          currentAge: age,
-          currentBio: bio,
-        ),
-      ),
-    );
-
-    if (result != null) {
-      setState(() {
-        name = result['name'];
-        age = result['age'];
-        bio = result['bio'];
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('My Profile Card')),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-             CircleAvatar(
-              radius: 100,
-              backgroundImage: AssetImage('assets/images/5332447875512265802.jpg'),
-            ),
-            SizedBox(height: 20),
-            Text(
-              name,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Age: $age',
-              style:  TextStyle(fontSize: 18),
-            ),
-            Padding(
-              padding:  EdgeInsets.all(12.0),
-              child: Text(
-                bio,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: openForm,
-              child:  Text('Edit Profile'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ProfileFormPage extends StatefulWidget {
-
-  final String currentName;
-  final int currentAge;
-  final String currentBio;
-
-  const ProfileFormPage({
-    super.key,
-    required this.currentName,
-    required this.currentAge,
-    required this.currentBio,
-  });
-
-  @override
-  State<ProfileFormPage> createState() => ProfileFormPageState();
-}
-
-class ProfileFormPageState extends State<ProfileFormPage> {
-  late TextEditingController nameController;
-  late TextEditingController ageController;
-  late TextEditingController bioController;
-
-  @override
-  void initState() {
-    super.initState();
-    nameController = TextEditingController(text: widget.currentName);
-    ageController = TextEditingController(text: widget.currentAge.toString());
-    bioController = TextEditingController(text: widget.currentBio);
-  }
-
-  @override
-  void dispose() {
-    nameController.dispose();
-    ageController.dispose();
-    bioController.dispose();
-    super.dispose();
-  }
-
-  void submitForm() {
-    String name = nameController.text.trim();
-    String ageText = ageController.text.trim();
-    String bio = bioController.text.trim();
-
-    if (name.isEmpty || ageText.isEmpty || bio.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-         SnackBar(content: Text('Please fill all fields')),
-      );
-    } else if (int.tryParse(ageText) == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter a valid age')),
-      );
-    } else {
-      Navigator.pop(context, {
-        'name': name,
-        'age': int.parse(ageText),
-        'bio': bio,
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Edit Profile')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Text("LOGIN",
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+              SizedBox(height: 45),
+              Text("Username", style: TextStyle(fontSize: 20)),
+              SizedBox(height: 10),
               TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                controller: usernameController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Username",
+                ),
               ),
+              SizedBox(height: 20),
+              Text("Password", style: TextStyle(fontSize: 20)),
               TextField(
-                controller: ageController,
-                decoration: const InputDecoration(labelText: 'Age'),
-                keyboardType: TextInputType.number,
+                controller: passwordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Password",
+                ),
               ),
-              TextField(
-                controller: bioController,
-                decoration: const InputDecoration(labelText: 'Bio'),
-                maxLines: 3,
-              ),
-              const SizedBox(height: 24),
+              SizedBox(height: 20),
               ElevatedButton(
-                onPressed: submitForm,
-                child: const Text('Submit'),
-              ),
+                onPressed: () async {
+                  String username = usernameController.text.trim();
+                  String password = passwordController.text.trim();
+
+                  if (username.isEmpty || password.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content:
+                              Text("Please enter username and password")),
+                    );
+                    return;
+                  }
+
+                  bool success = await loginUser(username, password);
+                  if (success) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => NewPage()),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Invalid username or password")),
+                    );
+                  }
+                },
+                child: Text("Login"),
+              )
             ],
           ),
         ),
-      
+      ),
     );
   }
 }

@@ -7,8 +7,12 @@ environment:
   sdk: ^3.8.1
 
 dependencies:
+  dio: ^5.4.0  # or latest version
   flutter:
     sdk: flutter
+  http: ^1.4.0
+  shared_preferences: ^2.2.2
+
 
 dev_dependencies:
   flutter_test:
@@ -20,4 +24,5 @@ flutter:
 
   assets:
     -  assets\images\5332447875512265802.jpg
-    
+    -  assets\images\nabeel.jpg
+       

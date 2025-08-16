@@ -1,20 +1,29 @@
 import 'package:flutter/material.dart';
-import 'home.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'home.dart';  
+import 'newpage.dart';  
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+
+  runApp(MyApp(token: token));
 }
 
-// App root widget
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String? token;
+  const MyApp({super.key, this.token});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'My Profile Card App',
+      title: 'Login',
       debugShowCheckedModeBanner: false,
-      home: const HomePage(),
+
+      home: token == null ? const HomePage() : NewPage(),
     );
   }
 }
